@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package opscenter.protocol;
+
+message Error {
+    string message = 1;
+    string exceptionType = 2;
+    string exceptionMessage = 3;
+}
+
+message Success {
+}

@@ -1,0 +1,70 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "opscenter.protocol";
+
+package opscenter.protocol;
+
+import "opscenter/protocol/common.proto";
+
+// A service is a logical grouping of related RPC calls that may or may not share the same
+// connection. We can map gRPC services almost one for one with Clojure components.
+service BackupService {
+    rpc GetBackupConfiguration (BackupConfigRequest) returns (BackupConfigResponse) {}
+    rpc SnapshotActivity (stream BackupMessageEnvelope) returns (stream BackupMessageEnvelope) {}
+    // PIT Activity
+    // Cleanup Activity
+    // ....
+}
+
+// Additional information that might be necessary for configuration may be sent.
+message BackupConfigRequest {
+    string agentId = 1;
+}
+
+// Defines the types of destinations that we have in the code. Unlike JSON/ReST protocols, it's more
+// efficient to use low numeric identifiers as they can be encoded in a single byte on the wire.
+enum DestinationProvider {
+    S3 = 0;
+    S3_CLI = 1;
+    AZURE = 2;
+    LOCAL_DISK = 3;
+}
+
+// Notice that we can now associate types with the various fields, like booleans and numbers. Enforcement
+// of the data types is done by the code generated from protoc and thus eliminates the need for all the
+// validation code that we have in our code base.
+message Destination {
+    DestinationProvider provider = 1;
+    string path = 2;
+    string access_key = 3;
+    string access_secret = 4;
+    int32 throttle_bytes_per_second = 5;
+    bool acceleration_mode = 6;
+    bool server_side_encryption = 7;
+}
+
+// We also still have maps too
+message BackupConfigResponse {
+    map<string, Destination> destinations = 1;
+}
+
+message TakeSnapshotRequest {
+    string tagId = 1;
+    repeated string destinationId = 2;
+    int64 at = 3;
+}
+
+message ListSnapshotRequest {
+    string destinationId = 1;
+    int64 lastSeen = 2;
+}
+
+message BackupMessageEnvelope {
+    string operationId = 1;
+    oneof details {
+        Error err = 16;
+        Success ok = 17;
+        TakeSnapshotRequest takeSnapshotReq = 18;
+        ListSnapshotRequest listSnapshotReq = 19;
+    }
+}

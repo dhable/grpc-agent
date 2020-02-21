@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+dependencies {
+    implementation project(":protocol")
+    implementation 'io.grpc:grpc-netty-shaded:1.26.0'
+    implementation 'io.grpc:grpc-protobuf:1.26.0'
+    implementation 'io.grpc:grpc-stub:1.26.0'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+    implementation 'commons-cli:commons-cli:1.4'
+}
+
+mainClassName = "opscenter.server.Server"
