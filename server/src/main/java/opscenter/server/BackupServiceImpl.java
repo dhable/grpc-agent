@@ -87,11 +87,11 @@ public class BackupServiceImpl extends BackupServiceGrpc.BackupServiceImplBase {
                 // The type of field set is encoded as a number and doesn't seem to be a good enum def for it
                 // that I've found so far.
                 switch(value.getDetailsCase().getNumber()) {
-                    case 16: // Err - the agent should never get this value
+                    case 16: // Err response from the agent
                        log.error("Request {} - Err: {}", value.getOperationId(), value.getErr().getMessage());
                         break;
 
-                    case 17: // Success - the agent should never get this value
+                    case 17: // Success response from the agent
                         log.info("Request {} - SUCCESS!", value.getOperationId());
                         break;
 
